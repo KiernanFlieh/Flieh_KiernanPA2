@@ -12,12 +12,15 @@
 #include <stdio.h>
 
 #define N 4
+static long result[N];
 
 static void *compute(void *arg)
 {
     long k = (long)arg;
-    long answer = (k + 1) * 100;
-    return &answer;
+    //Stores each threads answer in its own slot in the array.
+    result[k] = (k + 1) * 100;
+    
+    return &result[k];
 }
 
 int main(void)

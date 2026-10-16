@@ -53,14 +53,17 @@ int main(void)
     void *ret = NULL;
     long result = -1;                  /* -1 means: nothing was received */
 
-    if (create_worker(&t, worker, NULL) == -1) {
-        fprintf(stderr, "bug4: create_worker failed: %s\n", strerror(errno));
+    int rc = create_worker(&t, worker, NULL);
+
+    if (rc != 0) {
+        fprintf(stderr, "bug4: create_worker failed: %s\n", strerror(rc));
+        pthread_join(t, NULL);
         return 1;
     }
     printf("thread created with no error\n");
 
     if (pthread_join(t, &ret) == -1) {
-        fprintf(stderr, "bug4: pthread_join failed: %s\n", strerror(errno));
+        fprintf(stderr, "bug4: pthread_join failed: %s\n", strerror(rc));
         return 1;
     }
     if (ret != NULL) result = *(long *)ret;

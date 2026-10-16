@@ -26,7 +26,9 @@ int main(void)
     pthread_t t[N];
     for (long k = 0; k < N; k++)
         pthread_create(&t[k], NULL, add_mine, (void *)k);
-
+    //We need to wait for all the threads to be finshed before we can calculate total.
+    for (int k = 0; k < N; k++)
+        pthread_join(t[k], NULL);
     long total = 0;
     for (int k = 0; k < N; k++) total += slot[k];
     printf("total %ld (expected 4000)\n", total);
