@@ -54,15 +54,18 @@ typedef struct {
     double partial;   /* this thread writes here and nowhere else */
 } targ_t;
 
-/* TODO A1 -- the thread start routine.
- * The signature must be exactly  void *name(void *arg).
- * Cast arg back to targ_t *, sum work(x[i]) for i in [lo, hi) into a local
- * double, store it in arg->partial, and return NULL.
- * Accumulate into a LOCAL variable, not directly into arg->partial: the local
- * stays in a register and the struct field does not. */
 static void *sum_range(void *arg)
 {
-    (void)arg;
+    //Grab the args passed to the thread. 
+    targ_t *targ = (targ_t *)arg;
+    //Sets the sum of  this thread to 0.0.
+    double sum = 0.0;
+    //Loops through the parts of the array assigned to the thread.
+    for (long i = targ->lo; i < targ->hi; i++) {
+        sum += work(targ->x[i]);
+    }
+    //Collect the final sum for the thread and store it. 
+    targ->partial = sum;
     return NULL;
 }
 
@@ -77,28 +80,78 @@ static int run_once(double *x, long n, int nthreads,
 
     double t1 = now_sec();
 
-    /* TODO A2 -- allocate an array of nthreads pthread_t and an array of
-     * nthreads targ_t.
-     *
-     * TODO A3 -- create the threads.  Give thread k the range
-     *     lo = (long)k * n / nthreads,  hi = (long)(k + 1) * n / nthreads
-     * so the ranges tile [0, n) exactly: no gap, no overlap, and the last
-     * thread absorbs the remainder when nthreads does not divide n.
-     * Check the return value of pthread_create.  It returns an error NUMBER
-     * on failure.  It does not return -1 and it does not set errno, which is
-     * Bug 4 in Part B.  Turn the number into text with strerror(rc).
-     *
-     * TODO A4 -- join every thread, then add the partials up in thread order
-     * (0, 1, 2, ...).  Free what you allocated. */
     double total = 0.0;
-    (void)nthreads;
 
-    *sum_out   = now_sec() - t1;
+    //Stores the thread IDs for each thread.
+    pthread_t *threads = malloc(nthreads * sizeof(pthread_t));
+    //Create an array of targ_t structs for each thread.
+    targ_t *args = malloc(nthreads * sizeof(targ_t));
+
+    //Checking to see if the memory allocation failed for threads or args.
+    if (threads == NULL || args == NULL) {
+        fprintf(stderr, "tsum: cannot allocate memory for threads or args\n");
+
+        //Free memory that was allocated. 
+        free(threads);
+        free(args);
+        return 1;
+    }
+
+    //Loop through and assign each thread its own part of the array. 
+    for (int k = 0; k < nthreads; k++) {
+        args[k].x = x;
+        args[k].lo = (long)k * n / nthreads;
+        args[k].hi = (long)(k + 1) * n / nthreads;
+        args[k].partial = 0.0;
+        
+        //Create the thread and pass it the args for its part of the array.
+        int rc = pthread_create(&threads[k], NULL, sum_range, &args[k]);
+        //Checks to see if thread failed to create.
+        if (rc != 0) {
+            fprintf(stderr, "tsum: pthread_create failed: %s\n", strerror(rc));
+            for (int j = 0; j < k; j++) {
+                pthread_join(threads[j], NULL);
+            }
+
+            //Free memory that was allocated.
+            free(threads);
+            free(args);
+            return 1;
+        }
+    }
+    //Var for keeping track of join errors.
+    int join_error = 0;
+
+    //Waiting for each thread to finish.
+    for (int k = 0; k < nthreads; k++) {
+        int rc = pthread_join(threads[k], NULL);
+        //Checking to see if thread failed to join.
+        if (rc != 0) {
+            fprintf(stderr, "tsum: pthread_join failed: %s\n", strerror(rc));
+            join_error = 1;
+        }
+    }
+
+    //Exit if there was a join error.
+    if (join_error) {
+        free(threads);
+        free(args);
+        return 1;
+    }
+    //Adding up all the partial sums to get total.
+    for (int k = 0; k < nthreads; k++) {
+        total += args[k].partial;
+    }
+    //Free memory that was allocated.
+    free(threads);
+    free(args);
+
+    *sum_out = now_sec() - t1;
     *total_out = total;
     return 0;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char **argv) 
 {
     long n = 20000000;
     int nthreads = 1, reps = 3;

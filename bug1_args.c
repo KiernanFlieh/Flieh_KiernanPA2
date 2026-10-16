@@ -21,8 +21,11 @@ static void *show(void *arg)
 int main(void)
 {
     pthread_t t[N];
-    for (int i = 0; i < N; i++)
-        pthread_create(&t[i], NULL, show, &i);
+    int ids[N];
+    for (int i = 0; i < N; i++) {
+        ids[i] = i;
+        pthread_create(&t[i], NULL, show, &ids[i]);
+    }
     for (int i = 0; i < N; i++)
         pthread_join(t[i], NULL);
     return 0;
