@@ -1,6 +1,10 @@
 /*
  * PA2 Part A  --  tsum: one job, many threads.
- *
+ * 
+ * Group Members:
+ * 
+ * Kiernan Flieh, Cyril Tabaranza, Nathan Nguyen, Jared Fabian, Nick Pieratos
+ * 
  * The program does its work in two phases:
  *
  *   Phase 1 (serial)    fill x[i] = sin(i).  You may NOT thread this phase.
