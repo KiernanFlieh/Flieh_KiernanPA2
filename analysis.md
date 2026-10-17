@@ -1,8 +1,8 @@
 # PA2 analysis — < Kiernan Flieh, Cyril Tabaranza, Nathan Nguyen, Jared Fabian, Nick Pieratos >
 
-Group members (all names, or write "working alone"):
-Anyone outside your group you discussed this with:
-AI assistance (tool, and what you used it for; write "none" if none): none
+Group members (all names, or write "working alone"): Kiernan Flieh, Cyril Tabaranza, Nathan Nguyen, Jared Fabian, Nick Pieratos
+Anyone outside your group you discussed this with: none
+AI assistance (tool, and what you used it for; write "none" if none): ChatGPT Chat used it to verify if all PA2 Lab Instructions were completed and verify any bugs in code. 
 
 ---
 
@@ -26,7 +26,7 @@ AI assistance (tool, and what you used it for; write "none" if none): none
 **One-to-one or many-to-one?** Two sentences. Say what you would have seen
 instead if the mapping were many-to-one.
 
-: If it was many-to-one mapping, the kernal would only be able to see one thread. This is because the user threads would be mapped to a single kernel thread.
+: If it was many-to-one mapping, the kernel would only be able to see one thread because the user threads would be mapped to a single kernel thread. The observed increase from 1 to 5 kernel visible threads after creating the 4 Pthreads supports that it was one-to-one mapping.
 ---
 
 ## Part D — measurements
@@ -49,8 +49,8 @@ Plugged in, or on battery: Plugged in
 
 ### The serial fraction
 
-- S = fill_s / wall_s at one thread =
-- Amdahl ceiling = 1 / S =
+- S = fill_s / wall_s at one thread = 0.2115 (21.15%)
+- Amdahl ceiling = 1 / S = 4.73x
 
 ### The four questions
 
