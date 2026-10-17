@@ -16,5 +16,5 @@ Defect: Issue was that the thread returned the address of a variable that no lon
 Fix: Made a static array that stores each threads result separately and returns address of position in the array. 
 
 ## bug4_errno.c
-Defect: Issue was that we were checking for -1 and not checking for a nonzero error code. 
+Defect: Issue was that we were checking for -1 and not checking for a nonzero error code from pthread_join(). 
 Fix: Adjusted the checks so that they store the error code in rc and check if its nonzero, also changed strerror(errno) to strerror(rc) to correct the message.
