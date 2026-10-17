@@ -110,7 +110,11 @@ static int run_once(double *x, long n, int nthreads,
         if (rc != 0) {
             fprintf(stderr, "tsum: pthread_create failed: %s\n", strerror(rc));
             for (int j = 0; j < k; j++) {
-                pthread_join(threads[j], NULL);
+                int join_rc = pthread_join(threads[j], NULL);
+                if(join_rc != 0) {
+                    fprintf(stderr, "tsum: pthread_join failed: %s\n",
+                    strerror(join_rc));
+                }
             }
 
             //Free memory that was allocated.

@@ -1,3 +1,5 @@
+# Group Members: Kiernan Flieh, Cyril Tabaranza, Nathan Nguyen, Jared Fabian, Nick Pieratos
+
 # Part B answers
 
 For each program, one sentence naming the actual defect, and one sentence
