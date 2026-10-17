@@ -57,12 +57,12 @@ int main(void)
 
     if (rc != 0) {
         fprintf(stderr, "bug4: create_worker failed: %s\n", strerror(rc));
-        pthread_join(t, NULL);
         return 1;
     }
     printf("thread created with no error\n");
 
-    if (pthread_join(t, &ret) == -1) {
+    rc = pthread_join(t, &ret);
+    if (rc != 0) {
         fprintf(stderr, "bug4: pthread_join failed: %s\n", strerror(rc));
         return 1;
     }
